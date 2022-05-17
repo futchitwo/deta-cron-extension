@@ -1,0 +1,26 @@
+{
+  "name": "deta-random-cron",
+  "version": "1.0.0",
+  "description": "Set random cron to deta micro",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "vitest run --globals --dir=test --isolate=true",
+    "jest": "jest",
+    "btt": "node baseTimeTest.mjs",
+    "btti": "node baseTimeTestIt.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "deta": "^1.1.0",
+    "node-fetch": "^3.2.3"
+  },
+  "devDependencies": {
+    "jest": "^28.1.0",
+    "vitest": "^0.12.6"
+  }
+}

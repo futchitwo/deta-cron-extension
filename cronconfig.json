@@ -1,0 +1,17 @@
+{
+  "timezone": "JST",
+  "interval": "",
+  "crons": [
+    {
+      "type" :"normal",
+      "cron" : "",
+      "halfRange": "",
+      "stdev": ""
+    },
+    {
+      "type" :"uniform",
+      "cron" : "",
+      "halfRange": ""
+    }
+  ]
+}
