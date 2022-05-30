@@ -1,6 +1,6 @@
 // randomized が startDate よりも早くなった時の処理
 
-function randomizeDate(referenceDate, type, halfRange = 0) {
+export function randomizeDate(referenceDate, type, halfRange = 0) {
   let randomNum = 0;
   if (type === 'fixed') {
     // nothing
@@ -15,7 +15,7 @@ function randomizeDate(referenceDate, type, halfRange = 0) {
   return new Date(referenceDate.getTime() + randomNum);
 }
 
-function rnormWithHalfRange(halfRange) {
+export function rnormWithHalfRange(halfRange) {
   // https://staff.aist.go.jp/t.ihara/normsdist.html
   // When the standard deviation is 1/3 of halfRange, the normal distribution exceeds halfRange with a probability of 0.135% on one sided (0.27% on two sided).
   const stdev = halfRange / 3;
@@ -31,7 +31,7 @@ function rnorm() {
   return Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(2 * Math.PI * Math.random());
 }
 
-module.exports = {
+/*module.exports = {
   randomizeDate,
   rnormWithHalfRange,
-};
+};*/

@@ -1,5 +1,5 @@
-function* generateIterator(cronArray, refDate, includeNow = false) {
-  let itr;
+export function* generateIterator(cronArray:string[], refDate:Date, includeNow = false){
+  let itr: Generator<Date, never, Date>;
   refDate.setUTCSeconds(0,0);
   
   if(cronArray[2] === '?'){
@@ -9,10 +9,12 @@ function* generateIterator(cronArray, refDate, includeNow = false) {
       while(true){
         yield* setBaseHours(cronArray, DoWItr.next().value).flat();
       }
-    })();
+    })() as Generator<Date, never, Date>;
+  } else {
+    throw new Error('wrong cron');
   }
 
-  let next;
+  let next: Date;
 
   do {
     next = itr.next().value;
@@ -25,7 +27,7 @@ function* generateIterator(cronArray, refDate, includeNow = false) {
   }
 }
 
-function setBaseMinutes(cronArray, refDate) {
+function setBaseMinutes(cronArray: string[], refDate: Date) {
   // 0 0-59 n/m * , 
   const minutesArray = parseCronPart(cronArray[0], { min:0, max:59 });
 
@@ -36,7 +38,7 @@ function setBaseMinutes(cronArray, refDate) {
   return minutesArray.map(min => new Date(newrefDate.setMinutes(min, 0, 0)));
 }
 
-function setBaseHours(cronArray, refDate){
+function setBaseHours(cronArray: string[], refDate: Date){
   // 0 0-23 n/m * ,
   const hoursArray = parseCronPart(cronArray[1], {min:0,max:23});
 
@@ -47,7 +49,7 @@ function setBaseHours(cronArray, refDate){
   return hoursArray.map(hour => setBaseMinutes(cronArray,new Date(newrefDate.setHours(hour))));
 }
 
-function* generateDoWIterator(cronArray, refDate) {
+export function* generateDoWIterator(cronArray: string[], refDate: Date):Generator<Date, never, Date> {
   // 1 , 1-7 * L #2
   // # is TODO
   // ? is removed before
@@ -56,16 +58,16 @@ function* generateDoWIterator(cronArray, refDate) {
   const DoWArray = parseCronPart(cronArray[4], {
     min: 1,
     max: 7,
-    preprocessor(cronDoW){
+    preprocessor(cronDoW: string){
       return cronDoW
-        .replaceAll('L', '7')
-        .replaceAll('SUN', '1')
-        .replaceAll('MON', '2')
-        .replaceAll('TUE', '3')
-        .replaceAll('WED', '4')
-        .replaceAll('THU', '5')
-        .replaceAll('FRI', '6')
-        .replaceAll('SAT', '7')
+        .replace(/L/g, '7')
+        .replace(/SUN/g, '1')
+        .replace(/MON/g, '2')
+        .replace(/TUE/g, '3')
+        .replace(/WED/g, '4')
+        .replace(/THU/g, '5')
+        .replace(/FRI/g, '6')
+        .replace(/SAT/g, '7')
     },
   });
   
@@ -77,7 +79,7 @@ function* generateDoWIterator(cronArray, refDate) {
     }
   })();
   
-  let daysToProceed;
+  let daysToProceed: number;
   
   do {
     daysToProceed = iDoWArray.next().value;
@@ -89,7 +91,7 @@ function* generateDoWIterator(cronArray, refDate) {
   }
 }
 
-function setBaseDayOfMonth(cronArray, refDate){
+function setBaseDayOfMonth(cronArray: string[], refDate:Date){
   // 1 1-31 n/m , * ? L W 
 }
 
@@ -104,8 +106,14 @@ function getNextDayOfWeek(targetDoW,baseDate){
   return new Date(baseDate.getTime() + daysToAdd * MSEC_OF_DAY);
 }*/
 
-function parseCronPart(rawCronPart, settings){
-  const defaultPreprocessor = str => str;
+type CronPartSetting = {
+  min: number,
+  max: number,
+  preprocessor?: (str: string) => string
+};
+
+export function parseCronPart(rawCronPart: string, settings: CronPartSetting){
+  const defaultPreprocessor = (str:string) => str;
   
   const { min, max, preprocessor = defaultPreprocessor } = settings;
 
@@ -113,10 +121,10 @@ function parseCronPart(rawCronPart, settings){
   const toNumber = validateNum(min, max);
   
   // parse with ','
-  const splitedCronParts = preprocessor(rawCronPart).split(',');
+  const splitedCronParts = preprocessor(rawCronPart).split(',') as string[];
 
   // generate parsedCron from each (without array nesting)
-  splitedCronParts.forEach(cronPart => {
+  splitedCronParts.forEach((cronPart: string) => {
     if (cronPart === '*') {
       for(let i = min; i <= max; i++) parsedCron.push(i);
       
@@ -148,8 +156,8 @@ function parseCronPart(rawCronPart, settings){
   return [...new Set(parsedCron)].sort((n,m) => n-m);
 }
 
-function validateNum(min, max){
-  return (str) => {
+function validateNum(min: number, max: number){
+  return (str: string) => {
     const mayBeNum = Number(str)
     if (!Number.isInteger(mayBeNum)){
       throw Error(`"${mayBeNum}" is not Integer`);
@@ -163,9 +171,9 @@ function validateNum(min, max){
   };
 }
 
-module.exports = {
+/*module.exports = {
   generateIterator,
   setBaseHours,
   parseCronPart,
   generateDoWIterator,
-};
+};*/

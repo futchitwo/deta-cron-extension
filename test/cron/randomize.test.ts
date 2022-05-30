@@ -1,4 +1,4 @@
-const { randomizeDate, rnormWithHalfRange } = require('../../lib/cron/randomize.js');
+import { randomizeDate, rnormWithHalfRange } from '../../lib/cron/randomize.js';
 
 describe('Randomize date', () => {
   const referenceDate = new Date(100000);

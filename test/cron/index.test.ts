@@ -1,4 +1,4 @@
-const { createCrons, createCron } = require('../../lib/cron/index.js');
+import { createCrons, createCron } from '../../lib/cron/index.js';
 
 describe('Create cron', () => {
   const defaultCronSetting = {
@@ -10,7 +10,7 @@ describe('Create cron', () => {
   it('limitNum', () => {
     const result = createCron(defaultCronSetting, {
       limitNum: 5,
-      startDate: new Date('Jan 2 2022 00:00:00'),
+      createdDate: new Date('Jan 2 2022 00:00:00'),
     });
     
     const answer = Array.from({length: 5}, (_, i) => ({
@@ -25,7 +25,7 @@ describe('Create cron', () => {
   it('limitTime', () => {
     const result = createCron(defaultCronSetting, {
       limitTime: new Date('Jan 10 2022 00:00:00'),
-      startDate: new Date('Jan 2 2022 00:00:00'),
+      createdDate: new Date('Jan 2 2022 00:00:00'),
     });
     
     const answer = Array.from({length: 7}, (_, i) => ({
@@ -38,12 +38,10 @@ describe('Create cron', () => {
   });
 
   it('timezone', () => {
-    const result = createCron({
-      ...defaultCronSetting,
-      timezone: 9,
-    }, {
+    const result = createCron(defaultCronSetting, {
       limitNum: 1,
-      startDate: new Date('Jan 2 2022 00:00:00'),
+      createdDate: new Date('Jan 2 2022 00:00:00'),
+      timezone: 9,
     });
     
     const answer = [{

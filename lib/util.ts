@@ -1,4 +1,4 @@
-function dateToCron(date){
+export function dateToCron(date: Date){
   // use "?"
   const minute = date.getUTCMinutes();
   const hour = date.getUTCHours();
@@ -18,6 +18,6 @@ const intervalNum = {
 }
 */
 
-module.exports = {
+/*module.exports = {
   dateToCron,
-};
+};*/

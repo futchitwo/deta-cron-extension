@@ -1,11 +1,12 @@
-const { generateIterator } = require('./baseTime.js');
-const { randomizeDate } = require('./randomize.js');
+import { generateIterator } from './baseTime.js';
+import { randomizeDate } from './randomize.js';
 //const { dateToCron } = require('./../util.js');
+import { CronData, CreateOption, EventData } from '../../lib';
 
-//startdate wo now nisita toki ha second millsec wo 0 nisuru?
+// randomize sitakekka kakoni natta tokino syori 
 // limitTime dou tukuru
 
-function createCrons(cronSettings, createOption){
+export function createCrons(cronSettings: CronData[], createOption: CreateOption): EventData[]{
   const cronArray = [];
   cronSettings.forEach(cron => {
     cronArray.push(...createCron(cron, createOption));
@@ -30,9 +31,9 @@ function createCrons(cronSettings, createOption){
   } 
 }
 
-function createCron(cronSetting, { limitTime, limitNum, startDate }){
+export function createCron(cronSetting: CronData, { limitTime, limitNum, createdDate, timezone }: CreateOption) : EventData[]{
   const cronParts = cronSetting.cron.split(' ');
-  const itr = generateIterator(cronParts, startDate);
+  const itr = generateIterator(cronParts, createdDate);
   let next = itr.next().value;
   
   const dates = [];
@@ -47,9 +48,11 @@ function createCron(cronSetting, { limitTime, limitNum, startDate }){
               next,
               cronSetting.type,
               cronSetting.halfRange,
+              //createdDate,
             ),
-            cronSetting.timezone
+            timezone
           ),
+          //createdDate,
         });
         next = itr.next().value;
       } else {
@@ -66,24 +69,30 @@ function createCron(cronSetting, { limitTime, limitNum, startDate }){
             next,
             cronSetting.type,
             cronSetting.halfRange,
+            //createdDate,
           ),
-          cronSetting.timezone
+          timezone
         ),
+        //createdDate,
       });
       next = itr.next().value;
     }
   } else {
-    throw Error('limitTime and limitNum is not ');
+    throw Error('limitTime and limitNum do not exist.');
   }
   
   return dates;
 }
 
-function toUTC(date, timezone = 0) {
+function toUTC(date: Date, timezone = 0):Date {
   return new Date(date.getTime() - timezone * 60 * 60 * 1000);
 }
 
-module.exports = {
+function toLocalTime(date: Date, timezone = 0):Date {
+  return new Date(date.getTime() + timezone * 60 * 60 * 1000);
+}
+
+/*module.exports = {
   createCron,
   createCrons,
-}
+}*/

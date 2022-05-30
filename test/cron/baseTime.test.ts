@@ -1,6 +1,6 @@
 //import { describe, it, expect } from 'vitest';
 //import { generateIterator, parseCronWeek, generateDoWIterator } from '../../lib/cron/baseTime.js';
-const { generateIterator, parseCronPart, generateDoWIterator } = require('../../lib/cron/baseTime.js');
+import { generateIterator, parseCronPart, generateDoWIterator } from '../../lib/cron/baseTime.js';
 
 describe('Parse Cron Part', () => {
   const defaultTestSetting = { min:1, max:7 };
