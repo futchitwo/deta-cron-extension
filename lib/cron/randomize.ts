@@ -1,4 +1,3 @@
-// todo randnum minute ninattenai?
 // randomized が startDate よりも早くなった時の処理
 
 type randomizeType = 'fixed' | 'normal' | 'uniform';

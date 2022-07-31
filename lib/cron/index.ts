@@ -1,6 +1,5 @@
-import { generateIterator } from './baseTime.js';
+import awsCron from 'aws-cron-parser';
 import { randomizeDate } from './randomize.js';
-//const { dateToCron } = require('./../util.js');
 import { CronData, CreateOption, EventData } from '../../lib';
 
 // randomize sitakekka kakoni natta tokino syori 
@@ -33,9 +32,8 @@ export function createCrons(cronSettings: CronData[], createOption: CreateOption
 }
 
 export function createCron(cronSetting: CronData, { limitTime, limitNum, createdDate, timezone }: CreateOption) : EventData[]{
-  const cronParts = cronSetting.cron.split(' ');
-  const itr = generateIterator(cronParts, createdDate);
-  let next = itr.next().value;
+  const cron = awsCron.parse(cronSetting.cron);
+  let next = awsCron.next(cron, createdDate);
   
   const dates = [];
   if(limitTime) {
@@ -55,7 +53,7 @@ export function createCron(cronSetting: CronData, { limitTime, limitNum, created
           ),
           //createdDate,
         });
-        next = itr.next().value;
+        next = awsCron.next(cron, next);
       } else {
         break;
       }
@@ -76,7 +74,7 @@ export function createCron(cronSetting: CronData, { limitTime, limitNum, created
         ),
         //createdDate,
       });
-      next = itr.next().value;
+      next = awsCron.next(cron, next);
     }
   } else {
     throw Error('limitTime and limitNum do not exist.');
@@ -92,8 +90,3 @@ function toUTC(date: Date, timezone = 0):Date {
 function toLocalTime(date: Date, timezone = 0):Date {
   return new Date(date.getTime() + timezone * 60 * 60 * 1000);
 }
-
-/*module.exports = {
-  createCron,
-  createCrons,
-}*/

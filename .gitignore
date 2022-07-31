@@ -1,3 +1,4 @@
 node_modules
-lib.js
 .env
+lib.js
+lib.min.js

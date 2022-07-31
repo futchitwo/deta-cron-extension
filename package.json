@@ -1,6 +1,6 @@
 {
   "name": "deta-random-cron",
-  "version": "0.1.0-alpha-1",
+  "version": "0.1.1-alpha-2",
   "description": "Set random cron to deta micro",
   "main": "lib.js",
   "types": "lib.d.ts",
@@ -9,24 +9,20 @@
   },
   "scripts": {
     "test": "vitest run --globals --dir=test --isolate=true",
-    "jest": "jest",
-    "btt": "node baseTimeTest.mjs",
-    "btti": "node baseTimeTestIt.mjs",
-    "esb": "esbuild ./lib/ --platform=node --bundle --external:deta --external:node-fetch --outfile=lib.js --target=node14 --allow-overwrite",
-    "esbmin": "esbuild ./lib/ --minify --bundle --platform=node --external:./node_modules/* --outfile=lib.min.js --target=node14",
-    "esbmulti": "esbuild ./lib/ --target=node14 --outdir=out --format=cjs"
+    "build": "esbuild ./lib/ --platform=node --bundle --external:deta --external:node-fetch --outfile=lib.js --target=node14",
+    "buildmin": "esbuild ./lib/ --minify --bundle --platform=node --external:deta --external:node-fetch --outfile=lib.min.js --target=node14"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-cron-parser": "^1.1.12",
     "deta": "^1.1.0",
     "node-fetch": "^2.6.7"
   },
   "devDependencies": {
     "better-typescript-lib": "^2.1.0",
     "esbuild": "^0.14.49",
-    "jest": "^28.1.3",
     "typescript": "^4.7.4",
     "vitest": "^0.20.2"
   },
