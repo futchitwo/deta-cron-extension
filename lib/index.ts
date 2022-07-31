@@ -1,76 +1,83 @@
+import * as fs from 'fs';
 import { getQueueFromDB, setQueueToDB } from './deta/db.js';
 import { setCron } from './deta/cli.js';
 import { createEventList } from './eventsList.js';
-import * as fs from 'fs';
+import { isEmpty } from './util.js'; 
 
 import type { CronSetting, EventData } from './../lib';
 
 
-// createdData yorimo mae 
-export async function cron(setting: CronSetting, mockDB = null) {
-  const isMock = !!mockDB;
-  const { microName, microId } = getMicroInfo();
-  
-  const queueDBName = setting.queueDBName || microName + '-cronQueue';
-  const settingsDBName = setting.settingsDBName || microName + 'cronSettings';
-  
-  const eventsList = await getQueueFromDB(queueDBName, mockDB);
-  const trigeredEvents: EventData[] = [];
-  const now = new Date();
-  
-  if(!eventsList){
-    // first event
-    eventsList.push(...await createEventList(setting, settingsDBName, now, mockDB));
+// before createdData
+export function cron(setting: CronSetting, mockDB = null) {
+  const microName = getPackageName() || process.env.AWS_LAMBDA_FUNCTION_NAM;
 
-    setQueueToDB(queueDBName, eventsList, isMock);
-    setCron(microId, eventsList[0].randomizedUTC, isMock);
+  setting.queueDBName = setting.queueDBName || microName + '-cronQueue';
+  setting.settingsDBName = setting.settingsDBName || microName + '-cronSettings';
 
-    return (event) => {
-      console.info('Cron Setting is Finished!');
+  return async (event) => {
+    const triggeredEvents = await scheduler(setting, mockDB);
+    console.log("triggered:", triggeredEvents);
+    
+    if (isEmpty(triggeredEvents)) {
+      const initMessage = 'Finish cron initialization!';
+      console.log(initMessage);
+      return initMessage;
+    } else {
+      return await Promise.all(triggeredEvents.map((cronData) => {
+        event.randomcron = cronData;
+        const fn = setting.crons.find(cron => cron.name === cronData.name).function || setting.defaultFunction;
+        if (fn) {
+          return fn(event); // Promise
+        } else {
+          const noFuncMessage = `Function(${cronData.name}) and defaultFuction are not exist.`;
+          console.error(noFuncMessage);
+          return noFuncMessage;
+        }
+      }));
     }
-  }
-
-  function nextEventShouldFire(next){
-    return next && next.randomizedUTC <= now
-      //next.randomizedUTC <= trigeredEvents[0].randomizedUTC
-      //next.randomizedUTC <= trigeredEvents[0].createdData
-     //now?
-     // true false
-  }
-  
-  while(nextEventShouldFire(eventsList[0])){
-    // kokono jyunban
-    trigeredEvents.push(eventsList.shift());
-    if(!eventsList){
-      // set event
-      eventsList.push(...await createEventList(setting, settingsDBName, now, mockDB));
-    }
-  }
-
-  setQueueToDB(queueDBName, eventsList, isMock);
-  setCron(microId, eventsList[0].randomizedUTC, isMock);
-
-  
-  return (event) => {
-    // heiretuka
-    trigeredEvents.forEach((cronData: EventData) => {
-      event.randomcron = cronData;
-      const fn = setting.crons.find(cron => cron.name === cronData.name).function || setting.defaultFunction;
-      if(fn){
-        fn(event);
-      } else {
-        console.error(`Function(${cronData.name}) and defaultFuction are not exist.`);
-      }
-    });
   };
 }
 
-
-function getMicroInfo() {
-  const prog_info = fs.readFileSync('./.deta/prog_info');
-  const info = JSON.parse(prog_info.toString()) as {[k:string]: string};
-  return {
-    microName: info.name,
-    microId: info.id,
+async function scheduler(setting: CronSetting, mockDB) {
+  let eventsList = await getQueueFromDB(setting.queueDBName, mockDB);
+  let triggeredEvents: EventData[] = [];
+  
+  if (isEmpty(eventsList)) {
+    // first event
+    // generate queue
+    eventsList.push(...await createEventList(setting, setting.settingsDBName, new Date(), mockDB));
+  } else {
+    // generate triggered events list and generate queue
+    [ eventsList, triggeredEvents ] = await makeSchedule(setting, eventsList, mockDB);
   }
+
+  await Promise.all([
+    setQueueToDB(setting.queueDBName, eventsList, Boolean(mockDB)),
+    setCron(eventsList[0].randomizedUTC, Boolean(mockDB)),
+  ]);
+  
+  return triggeredEvents;
+}
+
+async function makeSchedule(setting: CronSetting, eventsList: EventData[], mockDB) {
+  const now = new Date();
+  const triggeredEvents: EventData[] = [];
+  
+  // while nextEventShouldDispatch
+  while(eventsList[0]?.randomizedUTC <= now){
+    // push first event to trigered list
+    triggeredEvents.push(eventsList.shift());
+
+    if(isEmpty(eventsList)){
+      // set event
+      eventsList.push(...await createEventList(setting, setting.settingsDBName, now, mockDB));
+    }
+  }
+
+  return [ eventsList, triggeredEvents ];
+}
+
+function getPackageName(): string | undefined {
+  const packageJson = fs.readFileSync(process.cwd() + '/package.json');
+  return JSON.parse(packageJson.toString()).name;
 }

@@ -7,7 +7,7 @@ export type CronFunction = (event: {
   type: string,
   cron: boolean,
   time: string,
-}) => void;
+}) => unknown;
 
 export type EventData = {
   name: string,
@@ -29,7 +29,7 @@ export type CronData = {
   name: string,
   type: 'fixed' | 'normal' | 'uniform',
   cron: string,
-  halfRange: number,
+  halfRange?: number,
   function?: CronFunction,
 };
 

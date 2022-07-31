@@ -1,6 +1,8 @@
 # TODO
 - interval 廃止？
 - day month
+  - Use https://github.com/beemhq/aws-cron-parser
+- cron api が 4XX 5XX エラーになったときの例外処理
 
 # ISSUE
 ## improve
@@ -59,3 +61,5 @@ create cronlist
   set db
 
 do function
+
+

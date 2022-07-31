@@ -9,6 +9,7 @@
     "declaration": true,
     "removeComments": true,
     */
+    "noEmit": true,
 
     //typeCheck
     "esModuleInterop": true,

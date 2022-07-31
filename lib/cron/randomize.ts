@@ -1,6 +1,9 @@
+// todo randnum minute ninattenai?
 // randomized が startDate よりも早くなった時の処理
 
-export function randomizeDate(referenceDate, type, halfRange = 0) {
+type randomizeType = 'fixed' | 'normal' | 'uniform';
+
+export function randomizeDate(referenceDate: Date, type: randomizeType, halfRange = 0) {
   let randomNum = 0;
   if (type === 'fixed') {
     // nothing
@@ -12,14 +15,14 @@ export function randomizeDate(referenceDate, type, halfRange = 0) {
     throw Error(`Cron type "${type}" is invalid`);
   }
 
-  return new Date(referenceDate.getTime() + randomNum);
+  return new Date(referenceDate.getTime() + randomNum * 60 * 1000);
 }
 
-export function rnormWithHalfRange(halfRange) {
+export function rnormWithHalfRange(halfRange: number) {
   // https://staff.aist.go.jp/t.ihara/normsdist.html
   // When the standard deviation is 1/3 of halfRange, the normal distribution exceeds halfRange with a probability of 0.135% on one sided (0.27% on two sided).
   const stdev = halfRange / 3;
-  let result;
+  let result: number;
   do {
     result = rnorm() * stdev; 
   } while (result < -halfRange || halfRange <= result);

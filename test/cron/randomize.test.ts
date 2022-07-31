@@ -1,7 +1,11 @@
 import { randomizeDate, rnormWithHalfRange } from '../../lib/cron/randomize.js';
 
+
 describe('Randomize date', () => {
-  const referenceDate = new Date(100000);
+  const MINUTE = 60 * 1000;
+  const referenceDate = new Date(100000 * MINUTE);
+  const min = 99900 * MINUTE;
+  const max = 100100 * MINUTE;
   
   it('Fixed', () => {
     const result = randomizeDate(referenceDate, 'fixed');
@@ -13,8 +17,8 @@ describe('Randomize date', () => {
       const result = randomizeDate(referenceDate, 'normal', 100);
       //console.log(result);
       
-      expect(result.getTime()).toBeGreaterThanOrEqual(99900);
-      expect(result.getTime()).toBeLessThan(100100);
+      expect(result.getTime()).toBeGreaterThanOrEqual(min);
+      expect(result.getTime()).toBeLessThan(max);
     }
   });
   
@@ -23,17 +27,16 @@ describe('Randomize date', () => {
       const result = randomizeDate(referenceDate, 'uniform', 100);
       //console.log(result);
       
-      expect(result.getTime()).toBeGreaterThanOrEqual(99900);
-      expect(result.getTime()).toBeLessThan(100100);
+      expect(result.getTime()).toBeGreaterThanOrEqual(min);
+      expect(result.getTime()).toBeLessThan(max);
     }
   });
-  
+
   it('Invalid type', () => {
     expect(
       () => randomizeDate(referenceDate, 'honi', 100)
     ).toThrow('Cron type "honi" is invalid');
   });
-  
 });
 
 describe('Rnorm with half range', () => {

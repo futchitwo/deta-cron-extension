@@ -1,32 +1,26 @@
 const { app } = require('deta');
-const { cron } = require('./lib');
+const { cron } = require('./lib.js');
 
-app.lib.cron(cron(
-  event => {
-    console.log("yey");
-  }
-));
-
-app.lib.cron(cron(
-  {
-    settingsDBName: '',
-    queueDBName: '',
-    timezone: 0,
+app.lib.cron(
+  cron({
+    settingsDBName: '', // option
+    queueDBName: '', // option
+    timezone: 0, // option, hour
     crons:[
       {
-        name: '',
-        type: '',
-        cron: '',
-        halfRange: 0,
-        function: (event) => {
-          console.log('yey')
+        name: 'exampleEvent',
+        type: 'normal', // 'fixed' | 'normal' | 'uniform'
+        cron: '15 * ? * * *',
+        halfRange: 5, // minute this example is range of 10-19 minutes
+        function: (event) => { // If omitted, executes the default function
+          console.log('yey');
         },
       },
     ],
-    defaultFunction: (event) => {
-      console.log('yey')
+    defaultFunction: (event) => { // option
+      console.log('default event!');
     },
-  },
-))
+  })
+);
 
-module.exports = app;
+  module.exports = app;

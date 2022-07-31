@@ -1,23 +1,13 @@
-export function dateToCron(date: Date){
-  // use "?"
+export function dateToCron(date: Date) {
   const minute = date.getUTCMinutes();
   const hour = date.getUTCHours();
   const day = date.getUTCDate();
-  const month = date.getUTCMonth();
+  const month = date.getUTCMonth() + 1;
   // const week = date.getUTCDay() + 1; //sussy AWS
   const year = date.getUTCFullYear();
   return `${minute} ${hour} ${day} ${month} ? ${year}`; 
 }
-/*
-const intervalNum = {
-  everyhour: 1,
-  everyday: 2,
-  everymonth: 3,
-  everyweek: 4,
-  everyyear: 5,
-}
-*/
 
-/*module.exports = {
-  dateToCron,
-};*/
+export function isEmpty(obj: object) {
+  return !Object.keys(obj).length;
+}

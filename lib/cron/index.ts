@@ -18,9 +18,10 @@ export function createCrons(cronSettings: CronData[], createOption: CreateOption
 
     //Exceed limit if same time
     const lastCron = limitedCronArray[limitedCronArray.length - 1];
+    
     for(
       let i = createOption.limitNum;
-      cronArray[i].randomizedUTC <= lastCron.randomizedUTC;
+      (i < cronArray.length) && (cronArray[i].randomizedUTC <= lastCron.randomizedUTC);
       i++){
       limitedCronArray.push(cronArray[i]);
     }
@@ -38,7 +39,7 @@ export function createCron(cronSetting: CronData, { limitTime, limitNum, created
   
   const dates = [];
   if(limitTime) {
-    while(true){
+    while(next) {
       if (next < limitTime){
         dates.push({
           name: cronSetting.name,
@@ -60,7 +61,7 @@ export function createCron(cronSetting: CronData, { limitTime, limitNum, created
       }
     }
   } else if(limitNum) {
-    for (let i = 0; i < limitNum; i++){
+    for (let i = 0; (i < limitNum) && next; i++) {
       dates.push({
         name: cronSetting.name,
         reference: next,
