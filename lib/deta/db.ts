@@ -8,9 +8,6 @@ type EventDataScheme = {
 
 const deta = Deta();
 
-// str to Date
-// key
-
 export async function getQueueFromDB(DBName: string, mockDB = null): Promise<EventData[]> {
   if(mockDB) return mockDB.queue;
   const db = deta.Base(DBName);
@@ -45,9 +42,3 @@ export async function getSettingsFromDB(DBName: string, mockDB = null): Promise<
     name: cron.name || cron.key,
   })) as CronData[];
 }
-
-/*module.exports = {
-  getCronFromDB,
-  setCronToDB,
-  getSettingsFromDB,
-}*/

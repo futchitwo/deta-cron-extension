@@ -1,8 +1,5 @@
 # Deta Random Cron
 
-## Note
-This is alpha release, you can set cron only "minutes, hours, days of week".
-
 ## How To Use
 1. Set an access token as environment variable on your Micro.
 2. Install and setting this package to your Micro.
@@ -44,9 +41,12 @@ app.lib.cron(
 module.exports = app;
 ```
 
-#### `halfRange`
-#### `type`
+## About palam
 
+### crons.halfRange
+aaa
+
+### crons.type
 enum | description
 --|--
 `'fixed'` | a

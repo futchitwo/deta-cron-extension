@@ -6,8 +6,6 @@ import { isEmpty } from './util.js';
 
 import type { CronSetting, EventData } from './../lib';
 
-
-// before createdData
 export function cron(setting: CronSetting, mockDB = null) {
   const microName = getPackageName() || process.env.AWS_LAMBDA_FUNCTION_NAM;
 

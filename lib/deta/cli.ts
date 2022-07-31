@@ -59,7 +59,3 @@ export function calcSignature(i) {
 
   return `${detaSignVersion}=${accessKeyID}:${hexSign}`
 }
-
-/*module.exports = {
-  setCron,
-}*/
