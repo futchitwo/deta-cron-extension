@@ -39,18 +39,21 @@ export function createCron(cronSetting: CronData, { limitTime, limitNum, created
   if(limitTime) {
     while(next) {
       if (next < limitTime){
+          const randomizedUTC = toUTC(
+          randomizeDate(
+            next,
+            cronSetting.type,
+            cronSetting.halfRange,
+            //createdDate,
+          ),
+          timezone
+        );
+        randomizedUTC.setUTCSeconds(0,0);
+        
         dates.push({
           name: cronSetting.name,
           reference: next,
-          randomizedUTC: toUTC(
-            randomizeDate(
-              next,
-              cronSetting.type,
-              cronSetting.halfRange,
-              //createdDate,
-            ),
-            timezone
-          ),
+          randomizedUTC,
           //createdDate,
         });
         next = awsCron.next(cron, next);
@@ -60,18 +63,21 @@ export function createCron(cronSetting: CronData, { limitTime, limitNum, created
     }
   } else if(limitNum) {
     for (let i = 0; (i < limitNum) && next; i++) {
+      const randomizedUTC = toUTC(
+        randomizeDate(
+          next,
+          cronSetting.type,
+          cronSetting.halfRange,
+          //createdDate,
+        ),
+        timezone
+      );
+      randomizedUTC.setUTCSeconds(0,0);
+      
       dates.push({
         name: cronSetting.name,
         reference: next,
-        randomizedUTC: toUTC(
-          randomizeDate(
-            next,
-            cronSetting.type,
-            cronSetting.halfRange,
-            //createdDate,
-          ),
-          timezone
-        ),
+        randomizedUTC,
         //createdDate,
       });
       next = awsCron.next(cron, next);

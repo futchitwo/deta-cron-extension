@@ -20,7 +20,7 @@ export async function getQueueFromDB(DBName: string, mockDB = null): Promise<Eve
   );
 }
 
-export async function setQueueToDB(DBName: string, queue: EventData[], isMock = false) {
+export async function setQueueToDB(DBName: string, queue: EventData[], isMock = false): Promise<void> {
   if(isMock) return;
   const db = deta.Base(DBName);
   const queueJson = queue.map(q => ({
@@ -35,10 +35,16 @@ export async function setQueueToDB(DBName: string, queue: EventData[], isMock = 
 
 export async function getSettingsFromDB(DBName: string, mockDB = null): Promise<CronData[]> {
   if(mockDB) return mockDB.settings;
+  
   const db = deta.Base(DBName);
   const cronData = (await db.fetch()).items;
+  
+  // create database (for deta dashboard)
+  //await db.put('', 'temp_key', { expireIn: 0 });
+  console.log("dbcronsetting:",cronData)
+  
   return cronData.map(cron => ({
-    ...(cron?.value as object || {}),
+    ...cron,
     name: cron.name || cron.key,
   })) as CronData[];
 }

@@ -14,11 +14,13 @@ app.lib.cron(
         halfRange: 5, // minute this example is range of 10-19 minutes
         function: (event) => { // If omitted, executes the default function
           console.log('yey');
+          return 'yeah';
         },
       },
     ],
     defaultFunction: (event) => { // option
-      console.log('default event!');
+      console.log(`default event! (eventname: ${event.randomcron.name}})`);
+      
     },
   })
 );

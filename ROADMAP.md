@@ -6,3 +6,4 @@
 - validate settings in DB
 - DB: str to date improvement
 - DB: `Deta()` at test env
+- cron-queue -> cron-cache

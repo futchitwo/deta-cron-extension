@@ -1,6 +1,6 @@
 {
   "name": "deta-random-cron",
-  "version": "0.1.1-alpha-2",
+  "version": "0.1.2-alpha-3",
   "description": "Set random cron to deta micro",
   "main": "lib.js",
   "types": "lib.d.ts",
@@ -9,8 +9,8 @@
   },
   "scripts": {
     "test": "vitest run --globals --dir=test --isolate=true",
-    "build": "esbuild ./lib/ --platform=node --bundle --external:deta --external:node-fetch --outfile=lib.js --target=node14",
-    "buildmin": "esbuild ./lib/ --minify --bundle --platform=node --external:deta --external:node-fetch --outfile=lib.min.js --target=node14"
+    "build": "esbuild ./lib/ --platform=node --bundle --external:deta --external:aws-cron-parser --external:node-fetch --outfile=lib.js --target=node14",
+    "buildmin": "esbuild ./lib/ --minify --bundle --platform=node --external:aws-cron-parser --external:deta --external:node-fetch --outfile=lib.min.js --target=node14"
   },
   "keywords": [],
   "author": "",

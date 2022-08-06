@@ -1,4 +1,4 @@
-export function dateToCron(date: Date) {
+export function dateToCron(date: Date): string {
   const minute = date.getUTCMinutes();
   const hour = date.getUTCHours();
   const day = date.getUTCDate();
@@ -8,6 +8,6 @@ export function dateToCron(date: Date) {
   return `${minute} ${hour} ${day} ${month} ? ${year}`; 
 }
 
-export function isEmpty(obj: object) {
+export function isEmpty(obj: object): boolean {
   return !Object.keys(obj).length;
 }

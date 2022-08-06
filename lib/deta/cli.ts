@@ -4,7 +4,7 @@ import { dateToCron } from '../util.js'
 
 const detaSignVersion = 'v0';
 
-export async function setCron(date: Date, isMock = false){
+export async function setCron(date: Date, isMock = false): Promise<void> {
   if(isMock) return;
   const accessToken = process.env.DETA_ACCESS_TOKEN;
   if (!accessToken) throw new Error('DETA_ACCESS_TOKEN is not set as env value.');
@@ -42,7 +42,7 @@ export async function setCron(date: Date, isMock = false){
 }
 
 // CalcSignature calculates the signature for signing the requests
-export function calcSignature(i) {
+export function calcSignature(i): string {
   if (detaSignVersion !== 'v0') return '';
 
   const tokenParts = i.AccessToken.split('_');
