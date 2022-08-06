@@ -43,7 +43,7 @@ async function scheduler(setting: CronSetting, mockDB): Promise<EventData[]> {
   if (isEmpty(eventsList)) {
     // first event
     // generate queue
-    eventsList.push(...await createEventList({ settings: setting, DBName: setting.settingsDBName, now: new Date(), mockDB }));
+    eventsList.push(...await createEventList(setting, setting.settingsDBName, new Date(), mockDB));
   } else {
     // generate triggered events list and generate queue
     [ eventsList, triggeredEvents ] = await makeSchedule(setting, eventsList, mockDB);

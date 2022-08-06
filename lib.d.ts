@@ -33,6 +33,7 @@ export type CronData = {
   function?: CronFunction,
 };
 
+// delete
 export type CreateOption = {
   limitNum?: number,
   limitTime?: Date,
