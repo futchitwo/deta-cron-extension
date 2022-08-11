@@ -1,12 +1,13 @@
 import * as fs from 'fs';
 import { getQueueFromDB, setQueueToDB } from './deta/db.js';
 import { setCron } from './deta/cli.js';
-import { createEventList } from './eventsList.js';
+import { getFullScheduleList } from './scheduleList.js';
+import { createCrons } from './cron/index.js';
 import { isEmpty } from './util.js'; 
 
-import type { CronSetting, EventData, CronFunction } from './../lib';
+import type { CronConfig, CronEvent, CronFunction } from './../lib';
 
-export function cron(setting: CronSetting, mockDB = null): CronFunction {
+export function cron(setting: CronConfig, mockDB = null): CronFunction {
   const microName = getPackageName() || process.env.AWS_LAMBDA_FUNCTION_NAM;
 
   setting.queueDBName = setting.queueDBName || microName + '-cron-queue';
@@ -36,30 +37,39 @@ export function cron(setting: CronSetting, mockDB = null): CronFunction {
   }) as CronFunction;
 }
 
-async function scheduler(setting: CronSetting, mockDB): Promise<EventData[]> {
-  let eventsList = await getQueueFromDB(setting.queueDBName, mockDB);
-  let triggeredEvents: EventData[] = [];
+async function scheduler(config: CronConfig, mockDB): Promise<CronEvent[]> {
+  let eventsList = await getQueueFromDB(config.queueDBName, mockDB);
+  let triggeredEvents: CronEvent[] = [];
   
   if (isEmpty(eventsList)) {
     // first event
     // generate queue
-    eventsList.push(...await createEventList(setting, setting.settingsDBName, new Date(), mockDB));
+    const fullScheduleList = await getFullScheduleList(config, mockDB);
+    eventsList.push(...createCrons(
+        fullScheduleList, 
+        {
+          limitNum: 5,
+          createdDate: new Date(),
+          timezone: config.timezone,
+        }
+      ));
   } else {
     // generate triggered events list and generate queue
-    [ eventsList, triggeredEvents ] = await makeSchedule(setting, eventsList, mockDB);
+    [ eventsList, triggeredEvents ] = await makeSchedule(config, eventsList, mockDB);
   }
 
   await Promise.all([
-    setQueueToDB(setting.queueDBName, eventsList, Boolean(mockDB)),
+    setQueueToDB(config.queueDBName, eventsList, Boolean(mockDB)),
     setCron(eventsList[0].randomizedUTC, Boolean(mockDB)),
   ]);
   
   return triggeredEvents;
 }
 
-async function makeSchedule(setting: CronSetting, eventsList: EventData[], mockDB): Promise<EventData[][]> {
+async function makeSchedule(config: CronConfig, eventsList: CronEvent[], mockDB): Promise<CronEvent[][]> {
+  const fullScheduleList = await getFullScheduleList(config, mockDB);
   const now = new Date();
-  const triggeredEvents: EventData[] = [];
+  const triggeredEvents: CronEvent[] = [];
   
   // while nextEventShouldDispatch
   while(eventsList[0]?.randomizedUTC <= now){
@@ -68,7 +78,14 @@ async function makeSchedule(setting: CronSetting, eventsList: EventData[], mockD
 
     if(isEmpty(eventsList)){
       // set event
-      eventsList.push(...await createEventList(setting, setting.settingsDBName, now, mockDB));
+      eventsList.push(...createCrons(
+        fullScheduleList, 
+        {
+          limitNum: 5,
+          createdDate: now,
+          timezone: config.timezone,
+        }
+      ));
     }
   }
 

@@ -1,6 +1,5 @@
 import { Deta } from 'deta';
-import type { CronData, EventData } from './../../lib';
-
+import type { CronSchedule, EventData } from './../../lib';
 
 type EventDataScheme = {
   [k in keyof EventData]: string
@@ -33,7 +32,7 @@ export async function setQueueToDB(DBName: string, queue: EventData[], isMock = 
   console.log("saveQueue:", res)
 }
 
-export async function getSettingsFromDB(DBName: string, mockDB = null): Promise<CronData[]> {
+export async function getSettingsFromDB(DBName: string, mockDB = null): Promise<CronSchedule[]> {
   if(mockDB) return mockDB.settings;
   
   const db = deta.Base(DBName);
@@ -46,5 +45,5 @@ export async function getSettingsFromDB(DBName: string, mockDB = null): Promise<
   return cronData.map(cron => ({
     ...cron,
     name: cron.name || cron.key,
-  })) as CronData[];
+  })) as CronSchedule[];
 }

@@ -1,7 +1,7 @@
 export type CronType = 'fixed' | 'normal' | 'uniform';
 
 export type CronFunction = (event: {
-  randomcron: EventData,
+  randomcron: CronEvent,
   _raw: unknown,
   body: string,
   type: string,
@@ -9,7 +9,7 @@ export type CronFunction = (event: {
   time: string,
 }) => unknown;
 
-export type EventData = {
+export type CronEvent = {
   name: string,
   reference: Date,
   randomizedUTC: Date,
@@ -17,15 +17,15 @@ export type EventData = {
   //timezone,
 };
 
-export type CronSetting = {
+export type CronConfig = {
   settingsDBName?: string,
   queueDBName?: string,
   timezone?: number,
-  crons: CronData[],
+  schedule: CronSchedule[],
   defaultFunction?: CronFunction,
 };
 
-export type CronData = {
+export type CronSchedule = {
   name: string,
   type: 'fixed' | 'normal' | 'uniform',
   cron: string,
@@ -33,12 +33,4 @@ export type CronData = {
   function?: CronFunction,
 };
 
-// delete
-export type CreateOption = {
-  limitNum?: number,
-  limitTime?: Date,
-  createdDate: Date,
-  timezone?: number,
-};
-
-declare function cron (setting: CronSetting): CronFunction;
+declare function cron (setting: CronConfig): CronFunction;

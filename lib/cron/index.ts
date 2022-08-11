@@ -1,13 +1,20 @@
 import awsCron from 'aws-cron-parser';
 import { randomizeDate } from './randomize.js';
-import { CronData, CreateOption, EventData } from '../../lib';
+import { CronSchedule, CronEvent } from '../../lib';
+
+type CreateOption = {
+  limitNum?: number,
+  limitTime?: Date,
+  createdDate: Date,
+  timezone?: number,
+};
 
 // randomize sitakekka kakoni natta tokino syori 
 // limitTime dou tukuru
 
-export function createCrons(cronSettings: CronData[], createOption: CreateOption): EventData[]{
-  const cronArray = [];
-  cronSettings.forEach(cron => {
+export function createCrons(schedule: CronSchedule[], createOption: CreateOption): CronEvent[] {
+  const cronArray: CronEvent[] = [];
+  schedule.forEach(cron => {
     cronArray.push(...createCron(cron, createOption));
   });
   cronArray.sort((a, b) => a.randomizedUTC - b.randomizedUTC);
@@ -31,8 +38,8 @@ export function createCrons(cronSettings: CronData[], createOption: CreateOption
   } 
 }
 
-export function createCron(cronSetting: CronData, { limitTime, limitNum, createdDate, timezone }: CreateOption) : EventData[]{
-  const cron = awsCron.parse(cronSetting.cron);
+export function createCron(schedule: CronSchedule, { limitTime, limitNum, createdDate, timezone }: CreateOption) : CronEvent[]{
+  const cron = awsCron.parse(schedule.cron);
   let next = awsCron.next(cron, createdDate);
   
   const dates = [];
@@ -42,8 +49,8 @@ export function createCron(cronSetting: CronData, { limitTime, limitNum, created
           const randomizedUTC = toUTC(
           randomizeDate(
             next,
-            cronSetting.type,
-            cronSetting.halfRange,
+            schedule.type,
+            schedule.halfRange,
             //createdDate,
           ),
           timezone
@@ -51,7 +58,7 @@ export function createCron(cronSetting: CronData, { limitTime, limitNum, created
         randomizedUTC.setUTCSeconds(0,0);
         
         dates.push({
-          name: cronSetting.name,
+          name: schedule.name,
           reference: next,
           randomizedUTC,
           //createdDate,
@@ -66,8 +73,8 @@ export function createCron(cronSetting: CronData, { limitTime, limitNum, created
       const randomizedUTC = toUTC(
         randomizeDate(
           next,
-          cronSetting.type,
-          cronSetting.halfRange,
+          schedule.type,
+          schedule.halfRange,
           //createdDate,
         ),
         timezone
@@ -75,7 +82,7 @@ export function createCron(cronSetting: CronData, { limitTime, limitNum, created
       randomizedUTC.setUTCSeconds(0,0);
       
       dates.push({
-        name: cronSetting.name,
+        name: schedule.name,
         reference: next,
         randomizedUTC,
         //createdDate,

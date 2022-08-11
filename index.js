@@ -6,7 +6,7 @@ app.lib.cron(
     settingsDBName: '', // option
     queueDBName: '', // option
     timezone: 0, // option, hour
-    crons:[
+    schedule: [
       {
         name: 'exampleEvent',
         type: 'normal', // 'fixed' | 'normal' | 'uniform'
