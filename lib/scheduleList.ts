@@ -20,7 +20,7 @@ export async function getFullScheduleList(config: CronConfig, mockDB): Promise<C
   return schedule;
 }
 
-function findAndSplice<T>(arr: T[], checkFn:(item: T)=>boolean) :T[] {
+function findAndSplice<T>(arr: T[], checkFn:(item: T)=>boolean): T | undefined {
   const i = arr.findIndex(checkFn);
-  return ( i >= 0 ? arr.splice(i,1) : [] );
+  return ( i >= 0 ? arr.splice(i,1)[0] : undefined );
 }

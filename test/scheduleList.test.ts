@@ -1,7 +1,7 @@
 import { getFullScheduleList } from '../lib/scheduleList.js';
 
 describe('Cron', () => {
-  it('Cron', () => {
+  it('Cron', async () => {
     const settings = {
       schedule: [
         {
@@ -16,18 +16,20 @@ describe('Cron', () => {
         } as const,
       ]
     };
-    const mockDB = [
-      {
-        name: 'test2',
-        type: 'fixed',
-        cron: '0 0/2 ? * * *',
-      } as const,
-      {
-        name: 'test5',
-        type: 'fixed',
-        cron: '0 0/5 ? * * *',
-      } as const,
-    ];
+    const mockDB = {
+      settings: [
+        {
+          name: 'test2',
+          type: 'fixed',
+          cron: '0 0/2 ? * * *',
+        } as const,
+        {
+          name: 'test5',
+          type: 'fixed',
+          cron: '0 0/5 ? * * *',
+        } as const,
+      ],
+    };
     const answer = [
       {
         name: 'test2',
@@ -46,7 +48,7 @@ describe('Cron', () => {
       } as const,
     ];
     
-    const result = getFullScheduleList(settings, mockDB);
+    const result = await getFullScheduleList(settings, mockDB);
     expect(result).toEqual(answer);
   });
 });

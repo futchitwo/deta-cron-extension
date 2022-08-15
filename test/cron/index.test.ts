@@ -37,6 +37,36 @@ describe('Create cron', () => {
     expect(result).toEqual(answer);
   });
 
+  it('onetime cron', () => {
+    const result = createCron({
+      name: 'test',
+      type: 'fixed',
+      cron: '0 0 1 1 ? 2022',
+    }, {
+      limitNum: 1,
+      createdDate: new Date('Jan 2 2022 00:00:00'),
+    });
+    
+    expect(result).toEqual([]);
+  });
+
+  /*
+  it('moveNext', () => {
+    const result = createCron(defaultCronSetting, {
+      limitNum: 1,
+      createdDate: new Date('Jan 2 2022 00:00:00'),
+      moveNext: 1,
+    });
+    
+    const answer = [{
+      name: 'test',
+      reference: new Date('Jan 4 2022 00:00:00'),
+      randomizedUTC: new Date('Jan 4 2022 00:00:00'),
+    }];
+    expect(result).toEqual(answer);
+  });
+  */
+  
   it('timezone', () => {
     const result = createCron(defaultCronSetting, {
       limitNum: 1,

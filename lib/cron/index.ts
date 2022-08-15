@@ -7,6 +7,7 @@ type CreateOption = {
   limitTime?: Date,
   createdDate: Date,
   timezone?: number,
+  moveNext?: number,
 };
 
 // randomize sitakekka kakoni natta tokino syori 
@@ -38,15 +39,26 @@ export function createCrons(schedule: CronSchedule[], createOption: CreateOption
   } 
 }
 
-export function createCron(schedule: CronSchedule, { limitTime, limitNum, createdDate, timezone }: CreateOption) : CronEvent[]{
+export function createCron(
+  schedule: CronSchedule, 
+  {
+    limitTime,
+    limitNum,
+    createdDate,
+    timezone,
+    //moveNext,
+  }: CreateOption
+) : CronEvent[]{
   const cron = awsCron.parse(schedule.cron);
   let next = awsCron.next(cron, createdDate);
+
+  //if (moveNext) for (let i = 0; i < moveNext && next; i++) next = awsCron.next(cron, next);
   
-  const dates = [];
+  const events = [];
   if(limitTime) {
     while(next) {
       if (next < limitTime){
-          const randomizedUTC = toUTC(
+        const randomizedUTC = toUTC(
           randomizeDate(
             next,
             schedule.type,
@@ -57,7 +69,7 @@ export function createCron(schedule: CronSchedule, { limitTime, limitNum, create
         );
         randomizedUTC.setUTCSeconds(0,0);
         
-        dates.push({
+        events.push({
           name: schedule.name,
           reference: next,
           randomizedUTC,
@@ -81,7 +93,7 @@ export function createCron(schedule: CronSchedule, { limitTime, limitNum, create
       );
       randomizedUTC.setUTCSeconds(0,0);
       
-      dates.push({
+      events.push({
         name: schedule.name,
         reference: next,
         randomizedUTC,
@@ -93,7 +105,7 @@ export function createCron(schedule: CronSchedule, { limitTime, limitNum, create
     throw Error('limitTime and limitNum do not exist.');
   }
   
-  return dates;
+  return events;
 }
 
 function toUTC(date: Date, timezone = 0):Date {

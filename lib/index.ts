@@ -2,13 +2,14 @@ import * as fs from 'fs';
 import { getQueueFromDB, setQueueToDB } from './deta/db.js';
 import { setCron } from './deta/cli.js';
 import { getFullScheduleList } from './scheduleList.js';
+import { getEventList, getTriggeredEvent, getNextEvent } from './eventList.js';
 import { createCrons } from './cron/index.js';
 import { isEmpty } from './util.js'; 
 
 import type { CronConfig, CronEvent, CronFunction } from './../lib';
 
 export function cron(setting: CronConfig, mockDB = null): CronFunction {
-  const microName = getPackageName() || process.env.AWS_LAMBDA_FUNCTION_NAM;
+  const microName = getPackageName() || process.env.AWS_LAMBDA_FUNCTION_NAME;
 
   setting.queueDBName = setting.queueDBName || microName + '-cron-queue';
   setting.settingsDBName = setting.settingsDBName || microName + '-cron-settings';
@@ -24,7 +25,7 @@ export function cron(setting: CronConfig, mockDB = null): CronFunction {
     } else {
       return await Promise.all(triggeredEvents.map((cronData) => {
         event.randomcron = cronData;
-        const fn = setting.crons.find(cron => cron.name === cronData.name)?.function || setting.defaultFunction || null;
+        const fn = setting.schedule.find(cron => cron.name === cronData.name)?.function || setting.defaultFunction || null;
         if (fn) {
           return fn(event); // Promise
         } else {
@@ -37,7 +38,7 @@ export function cron(setting: CronConfig, mockDB = null): CronFunction {
   }) as CronFunction;
 }
 
-async function scheduler(config: CronConfig, mockDB): Promise<CronEvent[]> {
+async function scheduler1(config: CronConfig, mockDB): Promise<CronEvent[]> {
   let eventsList = await getQueueFromDB(config.queueDBName, mockDB);
   let triggeredEvents: CronEvent[] = [];
   
@@ -90,6 +91,26 @@ async function makeSchedule(config: CronConfig, eventsList: CronEvent[], mockDB)
   }
 
   return [ eventsList, triggeredEvents ];
+}
+
+async function scheduler(config: CronConfig, mockDB): Promise<CronEvent[]> {
+  const [schedule, queue] = await Promise.all([
+    getFullScheduleList(config, mockDB),
+    getQueueFromDB(config.queueDBName, mockDB),
+  ]);
+  
+  const event = getEventList(schedule, queue, config.timezone);
+  const [triggeredEvent, notTriggeredEvent] = getTriggeredEvent(event);
+  
+  const nextEvent = getNextEvent(schedule, triggeredEvent, config.timezone);
+  const newQueue = notTriggeredEvent.concat(nextEvent);
+  newQueue.sort((a, b) => a.randomizedUTC.getTime() - b.randomizedUTC.getTime());
+
+  await Promise.all([
+    setQueueToDB(config.queueDBName, newQueue, Boolean(mockDB)),
+    newQueue.length ? setCron(newQueue[0].randomizedUTC, Boolean(mockDB)) : null,
+  ]);
+  return triggeredEvent;
 }
 
 function getPackageName(): string | undefined {

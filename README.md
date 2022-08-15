@@ -29,7 +29,7 @@ app.lib.cron(
     timezone: 0, // option, hour
     schedule: [
       {
-        name: 'exampleEvent',
+        name: 'exampleEvent', // do not duplicate
         type: '', // 'fixed' | 'normal' | 'uniform'
         cron: '15 * ? * * *',
         halfRange: 5, // minute
