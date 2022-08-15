@@ -3,7 +3,6 @@ import { getQueueFromDB, setQueueToDB } from './deta/db.js';
 import { setCron } from './deta/cli.js';
 import { getFullScheduleList } from './scheduleList.js';
 import { getEventList, getTriggeredEvent, getNextEvent } from './eventList.js';
-import { createCrons } from './cron/index.js';
 import { isEmpty } from './util.js'; 
 
 import type { CronConfig, CronEvent, CronFunction } from './../lib';
@@ -36,61 +35,6 @@ export function cron(setting: CronConfig, mockDB = null): CronFunction {
       }));
     }
   }) as CronFunction;
-}
-
-async function scheduler1(config: CronConfig, mockDB): Promise<CronEvent[]> {
-  let eventsList = await getQueueFromDB(config.queueDBName, mockDB);
-  let triggeredEvents: CronEvent[] = [];
-  
-  if (isEmpty(eventsList)) {
-    // first event
-    // generate queue
-    const fullScheduleList = await getFullScheduleList(config, mockDB);
-    eventsList.push(...createCrons(
-        fullScheduleList, 
-        {
-          limitNum: 5,
-          createdDate: new Date(),
-          timezone: config.timezone,
-        }
-      ));
-  } else {
-    // generate triggered events list and generate queue
-    [ eventsList, triggeredEvents ] = await makeSchedule(config, eventsList, mockDB);
-  }
-
-  await Promise.all([
-    setQueueToDB(config.queueDBName, eventsList, Boolean(mockDB)),
-    setCron(eventsList[0].randomizedUTC, Boolean(mockDB)),
-  ]);
-  
-  return triggeredEvents;
-}
-
-async function makeSchedule(config: CronConfig, eventsList: CronEvent[], mockDB): Promise<CronEvent[][]> {
-  const fullScheduleList = await getFullScheduleList(config, mockDB);
-  const now = new Date();
-  const triggeredEvents: CronEvent[] = [];
-  
-  // while nextEventShouldDispatch
-  while(eventsList[0]?.randomizedUTC <= now){
-    // push first event to trigered list
-    triggeredEvents.push(eventsList.shift());
-
-    if(isEmpty(eventsList)){
-      // set event
-      eventsList.push(...createCrons(
-        fullScheduleList, 
-        {
-          limitNum: 5,
-          createdDate: now,
-          timezone: config.timezone,
-        }
-      ));
-    }
-  }
-
-  return [ eventsList, triggeredEvents ];
 }
 
 async function scheduler(config: CronConfig, mockDB): Promise<CronEvent[]> {
