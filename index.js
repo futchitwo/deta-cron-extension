@@ -19,7 +19,7 @@ app.lib.cron(
       },
     ],
     defaultFunction: (event) => { // option
-      console.log(`default event! (eventname: ${event.randomcron.name}})`);
+      console.log(`default event! (eventname: ${event.extention.name}})`);
       
     },
   })

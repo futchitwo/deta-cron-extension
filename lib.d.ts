@@ -1,7 +1,7 @@
 export type CronType = 'fixed' | 'normal' | 'uniform';
 
 export type CronFunction = (event: {
-  randomcron: CronEvent,
+  extention: CronEvent,
   _raw: unknown,
   body: string,
   type: string,

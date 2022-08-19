@@ -1,5 +1,5 @@
 import { getSettingsFromDB } from './deta/db.js';
-import type { CronConfig, CronSchedule, CronEvent } from './../lib';
+import type { CronConfig, CronSchedule } from './../lib';
 
 export async function getFullScheduleList(config: CronConfig, mockDB): Promise<CronSchedule[]> {
   const settingInDB = await getSettingsFromDB(config.settingsDBName, mockDB);

@@ -10,8 +10,8 @@ import type { CronConfig, CronEvent, CronFunction } from './../lib';
 export function cron(setting: CronConfig, mockDB = null): CronFunction {
   const microName = getPackageName() || process.env.AWS_LAMBDA_FUNCTION_NAME;
 
-  setting.queueDBName = setting.queueDBName || microName + '-cron-queue';
-  setting.settingsDBName = setting.settingsDBName || microName + '-cron-settings';
+  setting.queueDBName ||= microName + '-cron-queue';
+  setting.settingsDBName ||= microName + '-cron-settings';
 
   return (async (event) => {
     const triggeredEvents = await scheduler(setting, mockDB);
@@ -23,7 +23,7 @@ export function cron(setting: CronConfig, mockDB = null): CronFunction {
       return initMessage;
     } else {
       return await Promise.all(triggeredEvents.map((cronData) => {
-        event.randomcron = cronData;
+        event.extention = cronData;
         const fn = setting.schedule.find(cron => cron.name === cronData.name)?.function || setting.defaultFunction || null;
         if (fn) {
           return fn(event); // Promise

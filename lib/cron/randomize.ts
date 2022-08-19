@@ -1,5 +1,3 @@
-// randomized が startDate よりも早くなった時の処理
-
 type randomizeType = 'fixed' | 'normal' | 'uniform';
 
 export function randomizeDate(referenceDate: Date, type: randomizeType, halfRange = 0) {

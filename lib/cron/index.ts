@@ -13,7 +13,7 @@ export function createCron(
   }
 ) : CronEvent | undefined {
   const cron = awsCron.parse(schedule.cron);
-  let next = awsCron.next(cron, createdDate);
+  let next = awsCron.next(cron, toLocalTime(createdDate, timezone));
 
   if(!next) return undefined;
   

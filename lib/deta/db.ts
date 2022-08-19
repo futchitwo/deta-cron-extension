@@ -14,8 +14,8 @@ let deta: ReturnType<typeof Deta>;
 
 try {
   deta = Deta();
-} catch(err) {
-  console.error(err);
+} catch {
+  // nothing
 }
 
 export async function getQueueFromDB(DBName: string, mockDB: MockDB = null): Promise<CronEvent[]> {

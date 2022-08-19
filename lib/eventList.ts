@@ -25,7 +25,7 @@ export function getEventList(schedule: CronSchedule[], queue: CronEvent[], timez
 
   return queue.concat(
     // validate for one time cron
-    ...eventNotQueued.filter(ev => ev !== undefined)
+    ...eventNotQueued.filter(ev => ev !== undefined) as CronEvent[]
   ).sort((a, b) => a.randomizedUTC.getTime() - b.randomizedUTC.getTime());
 }
 
@@ -38,7 +38,7 @@ export function getNextEvent(schedule: CronSchedule[], event: CronEvent[], timez
         scdl,
         {
           createdDate: ev.reference,
-          timezone,
+          //timezone,
         }
       ) : undefined;
       if (next) nextEvent.push(next);

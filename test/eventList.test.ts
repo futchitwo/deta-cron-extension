@@ -86,7 +86,28 @@ describe('getNextEvent', () => {
     
     const result = getNextEvent(schedule, event);
     expect(result).toEqual([]);
-  })
+  });
+
+  it('has timezone', () => {
+    const schedule = [{
+      name: 'test1',
+      type: 'fixed',
+      cron: '0 * ? * * *',
+    }];
+    const event = [{
+      name: 'test1',
+      reference: new Date('Jan 1 2022 00:00:00'),
+      randomizedUTC: new Date('Jan 1 2022 00:00:00'),
+    }];
+    
+    const answer = [{
+      name: 'test1',
+      reference: new Date('Jan 1 2022 01:00:00'),
+      randomizedUTC: new Date('Jan 1 2022 01:00:00'),
+    }];
+    const result = getNextEvent(schedule, event, 9);
+    expect(result).toEqual(answer);
+  });
 });
 
 describe('getNewQueue', () => {
