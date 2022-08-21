@@ -1,4 +1,5 @@
-# Deta Random Cron
+# Deta Cron Extension
+Enable multiple cron.
 Randomize the timing of cron execution.
 
 ## How To Use

@@ -3,8 +3,8 @@ const { cron } = require('./lib.js');
 
 app.lib.cron(
   cron({
-    settingsDBName: '', // option
-    queueDBName: '', // option
+    settingsDBName: 'deta-random-cron-cron-settings', // option
+    queueDBName: 'deta-random-cron-cron-queue', // option
     timezone: 0, // option, hour
     schedule: [
       {
