@@ -1,6 +1,6 @@
 {
   "name": "deta-cron-extension",
-  "version": "0.2.1-alpha-7",
+  "version": "0.2.2-alpha-7",
   "description": "Set random cron to deta micro",
   "main": "lib.js",
   "types": "lib.d.ts",
