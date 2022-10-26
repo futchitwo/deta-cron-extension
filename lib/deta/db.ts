@@ -1,7 +1,7 @@
 import { Deta } from 'deta';
 import type { CronSchedule, CronEvent } from './../../lib';
 
-type CronEventScheme = {
+type CronEventEntity = {
   [k in keyof CronEvent]: string
 };
 
@@ -21,7 +21,7 @@ try {
 export async function getQueueFromDB(DBName: string, mockDB: MockDB = null): Promise<CronEvent[]> {
   if(mockDB) return mockDB.queue;
   const db = deta.Base(DBName);
-  const queue = (await db.get('queue'))?.value as CronEventScheme[] || [];
+  const queue = (await db.get('queue'))?.value as CronEventEntity[] || [];
   return queue.map(q => ({
       ...q,
       randomizedUTC: new Date(q.randomizedUTC),
@@ -30,14 +30,14 @@ export async function getQueueFromDB(DBName: string, mockDB: MockDB = null): Pro
   );
 }
 
-export async function setQueueToDB(DBName: string, queue: CronEvent[], isMock = false): Promise<void> {
+export async function setQueueToDB(DBName: string, queue: readonly CronEvent[], isMock = false): Promise<void> {
   if(isMock) return;
   const db = deta.Base(DBName);
   const queueJson = queue.map(q => ({
       ...q,
       randomizedUTC: q.randomizedUTC.toJSON(),
       reference: q.reference.toJSON(),
-    }) as CronEventScheme
+    }) as CronEventEntity
   );
   const res = await db.put(queueJson,'queue');
   console.log("saveQueue:", res)

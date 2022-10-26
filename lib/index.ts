@@ -38,6 +38,8 @@ export function cron(setting: CronConfig, mockDB = null): CronFunction {
 }
 
 async function scheduler(config: CronConfig, mockDB): Promise<CronEvent[]> {
+  if (config.queueDBName == null) throw Error('scheduler: config.queueDBName must not empty');
+  
   const [schedule, queue] = await Promise.all([
     getFullScheduleList(config, mockDB),
     getQueueFromDB(config.queueDBName, mockDB),

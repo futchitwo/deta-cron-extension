@@ -2,6 +2,8 @@ import { getSettingsFromDB } from './deta/db.js';
 import type { CronConfig, CronSchedule } from './../lib';
 
 export async function getFullScheduleList(config: CronConfig, mockDB): Promise<CronSchedule[]> {
+  if (config.settingsDBName == null) throw Error('scheduleList: config.settingsDBName must not empty');
+  
   const settingInDB = await getSettingsFromDB(config.settingsDBName, mockDB);
   
   // TODO: validate settingsInDB

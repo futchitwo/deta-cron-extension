@@ -3,7 +3,7 @@
   - TOKEN がない時、期限切れの時
 - validate settings in DB
 - DB: str to date improvement
-- cron-queue -> cron-cache
+- // cron-queue -> cron-cache
 - rename deta-random-cron
   - name
     - deta-cron-extention
@@ -19,6 +19,9 @@
     - replit
 
 ## Refactor
+- lib.d.ts -> types.d.ts
+    - package.json
+- Add type to MockDB
 
 ### Function Name
 - settingsDBName -> scheduleDBName
